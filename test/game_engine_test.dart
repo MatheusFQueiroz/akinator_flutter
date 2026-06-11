@@ -12,8 +12,11 @@ Answer _idealAnswer(Professor professor, String attributeId) {
   return Answer.naoSei;
 }
 
-GameEngine _newEngine() =>
-    GameEngine(professors: professors, questions: questions);
+GameEngine _newEngine({int randomSeed = 1}) => GameEngine(
+  professors: professors,
+  questions: questions,
+  randomSeed: randomSeed,
+);
 
 /// Joga com respostas ideais até o motor querer palpitar ou acabar.
 void _playFor(GameEngine engine, Professor professor) {
@@ -51,17 +54,33 @@ void main() {
   });
 
   test('palpita corretamente cada professor com respostas ideais', () {
-    for (final professor in professors) {
-      final engine = _newEngine();
-      _playFor(engine, professor);
-      expect(
-        engine.bestGuess,
-        professor.name,
-        reason:
-            'Falhou para ${professor.name} '
-            'após ${engine.history.length} perguntas',
-      );
+    // Várias seeds para cobrir ordens de pergunta diferentes.
+    for (var seed = 0; seed < 5; seed++) {
+      for (final professor in professors) {
+        final engine = _newEngine(randomSeed: seed);
+        _playFor(engine, professor);
+        expect(
+          engine.bestGuess,
+          professor.name,
+          reason:
+              'Falhou para ${professor.name} (seed $seed) '
+              'após ${engine.history.length} perguntas',
+        );
+      }
     }
+  });
+
+  test('a ordem das perguntas varia entre partidas', () {
+    final firstQuestions = <int>{};
+    for (var seed = 0; seed < 10; seed++) {
+      final engine = _newEngine(randomSeed: seed);
+      firstQuestions.add(engine.currentQuestion!.id);
+    }
+    expect(
+      firstQuestions.length,
+      greaterThan(1),
+      reason: 'A primeira pergunta deveria variar entre partidas',
+    );
   });
 
   test('quer palpitar cedo, antes de esgotar as perguntas', () {

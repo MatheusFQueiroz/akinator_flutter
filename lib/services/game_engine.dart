@@ -12,8 +12,10 @@ import '../models/question.dart';
 ///    pelo histórico de aprendizado).
 ///  * A cada resposta, multiplica a probabilidade de cada professor pela
 ///    verossimilhança da resposta dada (regra de Bayes) e normaliza.
-///  * A próxima pergunta é escolhida dinamicamente: a que maximiza o ganho
-///    de informação esperado (maior redução de entropia da distribuição).
+///  * A próxima pergunta é escolhida dinamicamente: sorteia entre as de
+///    maior ganho de informação esperado (maior redução de entropia da
+///    distribuição), para a ordem variar entre partidas sem perder
+///    qualidade.
 ///  * Quando a confiança no melhor palpite atinge [confidenceThreshold],
 ///    o motor sinaliza [shouldGuess] — a UI pergunta "está pensando em X?".
 ///    Se o jogador rejeitar ([rejectGuess]), o professor é eliminado e o
@@ -27,11 +29,13 @@ class GameEngine {
     this.confidenceThreshold = 0.85,
     this.minQuestions = 5,
     this.maxQuestions = 20,
-  }) {
+    int? randomSeed,
+  }) : _random = math.Random(randomSeed) {
     _priors = {
       for (final p in professors) p.name: priorWeights?[p.name] ?? 1.0,
     };
-    _recompute();
+    _updatePosterior();
+    _currentQuestion = _selectNextQuestion();
   }
 
   final List<Professor> professors;
@@ -49,6 +53,11 @@ class GameEngine {
   /// Ganho de informação mínimo para uma pergunta valer a pena.
   static const double _minInformationGain = 1e-3;
 
+  /// Perguntas com ganho a partir desta fração do melhor entram no
+  /// sorteio da próxima pergunta (variedade entre partidas).
+  static const double _gainTolerance = 0.7;
+
+  final math.Random _random;
   final List<AnsweredQuestion> _history = [];
   final Set<String> _rejected = {};
   late Map<String, double> _priors;
@@ -94,20 +103,24 @@ class GameEngine {
     final question = _currentQuestion;
     if (question == null) return;
     _history.add(AnsweredQuestion(question: question, answer: answer));
-    _recompute();
+    _updatePosterior();
+    _currentQuestion = _selectNextQuestion();
   }
 
-  /// Desfaz a última resposta (botão "voltar").
+  /// Desfaz a última resposta (botão "voltar"), restaurando exatamente a
+  /// pergunta que estava na tela.
   void undo() {
     if (_history.isEmpty) return;
-    _history.removeLast();
-    _recompute();
+    final last = _history.removeLast();
+    _updatePosterior();
+    _currentQuestion = last.question;
   }
 
   /// Elimina um professor cujo palpite o jogador rejeitou e segue o jogo.
   void rejectGuess(String professorName) {
     _rejected.add(professorName);
-    _recompute();
+    _updatePosterior();
+    _currentQuestion = _selectNextQuestion();
   }
 
   /// Verossimilhança de o jogador dar [answer] para um professor cujo
@@ -128,7 +141,7 @@ class GameEngine {
     }
   }
 
-  void _recompute() {
+  void _updatePosterior() {
     final scores = Map<String, double>.from(_priors);
     for (final answered in _history) {
       for (final p in professors) {
@@ -145,7 +158,6 @@ class GameEngine {
     }
     _normalize(scores);
     _posterior = scores;
-    _currentQuestion = _selectNextQuestion();
   }
 
   void _normalize(Map<String, double> dist) {
@@ -158,19 +170,26 @@ class GameEngine {
     dist.updateAll((_, v) => v / total);
   }
 
+  /// Sorteia a próxima pergunta entre as melhores: todas as candidatas com
+  /// ganho de informação a partir de [_gainTolerance] do maior ganho.
   Question? _selectNextQuestion() {
     final askedIds = _history.map((h) => h.question.id).toSet();
-    Question? best;
-    var bestGain = _minInformationGain;
+    final candidates = <(Question, double)>[];
+    var bestGain = 0.0;
     for (final q in questions) {
       if (askedIds.contains(q.id)) continue;
       final gain = _informationGain(q);
-      if (gain > bestGain) {
-        bestGain = gain;
-        best = q;
-      }
+      if (gain <= _minInformationGain) continue;
+      candidates.add((q, gain));
+      if (gain > bestGain) bestGain = gain;
     }
-    return best;
+    if (candidates.isEmpty) return null;
+
+    final top = [
+      for (final (question, gain) in candidates)
+        if (gain >= bestGain * _gainTolerance) question,
+    ];
+    return top[_random.nextInt(top.length)];
   }
 
   /// Ganho de informação esperado da pergunta: entropia atual menos a
