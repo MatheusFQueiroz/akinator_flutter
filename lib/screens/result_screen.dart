@@ -35,8 +35,7 @@ class _ResultScreenState extends State<ResultScreen> {
       ..sort((a, b) => b.value.compareTo(a.value));
     _ranking = sorted;
     _predicted = sorted.isNotEmpty ? sorted.first.key : 'Desconhecido';
-    _confidence =
-        sorted.isNotEmpty ? (sorted.first.value * 100).round() : 0;
+    _confidence = sorted.isNotEmpty ? (sorted.first.value * 100).round() : 0;
   }
 
   void _onCorrect() {
@@ -168,143 +167,150 @@ class _ResultScreenState extends State<ResultScreen> {
     return Scaffold(
       backgroundColor: BrutalColors.bg,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Center(child: AkinatorCharacter(size: 110)),
-              const SizedBox(height: 20),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  BrutalTag(
-                    text: 'Eu acho que é...',
-                    color: BrutalColors.yellow,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              BrutalBox(
-                padding: const EdgeInsets.all(24),
-                shadowOffset: 7,
-                child: Column(
-                  children: [
-                    ProfessorAvatar(name: _predicted, radius: 70),
-                    const SizedBox(height: 16),
-                    Text(
-                      _predicted.toUpperCase(),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1,
-                        color: BrutalColors.ink,
+                  const Center(child: AkinatorCharacter(size: 110)),
+                  const SizedBox(height: 20),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      BrutalTag(
+                        text: 'Eu acho que é...',
+                        color: BrutalColors.yellow,
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  BrutalBox(
+                    padding: const EdgeInsets.all(24),
+                    shadowOffset: 7,
+                    child: Column(
+                      children: [
+                        ProfessorAvatar(name: _predicted, radius: 70),
+                        const SizedBox(height: 16),
+                        Text(
+                          _predicted.toUpperCase(),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1,
+                            color: BrutalColors.ink,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        BrutalTag(
+                          text: '$_confidence% de certeza',
+                          color: BrutalColors.lilac,
+                        ),
+                        if (second != null) ...[
+                          const SizedBox(height: 10),
+                          Text(
+                            'Segunda opção: ${second.key} '
+                            '(${(second.value * 100).round()}%)',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: BrutalColors.ink,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                    const SizedBox(height: 12),
-                    BrutalTag(
-                      text: '$_confidence% de certeza',
-                      color: BrutalColors.lilac,
-                    ),
-                    if (second != null) ...[
-                      const SizedBox(height: 10),
-                      Text(
-                        'Segunda opção: ${second.key} '
-                        '(${(second.value * 100).round()}%)',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: BrutalColors.ink,
+                  ),
+                  const SizedBox(height: 28),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: BrutalButton(
+                          color: BrutalColors.green,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          onPressed: _onCorrect,
+                          child: const Center(
+                            child: Text(
+                              '✅ ACERTOU!',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                color: BrutalColors.ink,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: BrutalButton(
+                          color: BrutalColors.red,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          onPressed: _onWrong,
+                          child: const Center(
+                            child: Text(
+                              '❌ ERROU!',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                color: BrutalColors.ink,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ],
-                  ],
-                ),
-              ),
-              const SizedBox(height: 28),
-              Row(
-                children: [
-                  Expanded(
-                    child: BrutalButton(
-                      color: BrutalColors.green,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      onPressed: _onCorrect,
-                      child: const Center(
-                        child: Text(
-                          '✅ ACERTOU!',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            color: BrutalColors.ink,
-                          ),
+                  ),
+                  const SizedBox(height: 28),
+                  if (widget.learningService.totalGames > 0) ...[
+                    BrutalBox(
+                      color: BrutalColors.lilac,
+                      shadowOffset: 4,
+                      padding: const EdgeInsets.all(12),
+                      child: Text(
+                        'JOGOS: ${widget.learningService.totalGames}  |  '
+                        'ERROS: ${widget.learningService.totalMistakes}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: BrutalColors.ink,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.5,
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: BrutalButton(
-                      color: BrutalColors.red,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      onPressed: _onWrong,
-                      child: const Center(
-                        child: Text(
-                          '❌ ERROU!',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            color: BrutalColors.ink,
-                          ),
+                    const SizedBox(height: 16),
+                  ],
+                  BrutalButton(
+                    color: BrutalColors.purple,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shadowOffset: 6,
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const WelcomeScreen(),
+                        ),
+                      );
+                    },
+                    child: const Center(
+                      child: Text(
+                        'JOGAR NOVAMENTE',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                          color: BrutalColors.white,
                         ),
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 28),
-              if (widget.learningService.totalGames > 0) ...[
-                BrutalBox(
-                  color: BrutalColors.lilac,
-                  shadowOffset: 4,
-                  padding: const EdgeInsets.all(12),
-                  child: Text(
-                    'JOGOS: ${widget.learningService.totalGames}  |  '
-                    'ERROS: ${widget.learningService.totalMistakes}',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: BrutalColors.ink,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
-              BrutalButton(
-                color: BrutalColors.purple,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shadowOffset: 6,
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const WelcomeScreen()),
-                  );
-                },
-                child: const Center(
-                  child: Text(
-                    'JOGAR NOVAMENTE',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1,
-                      color: BrutalColors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

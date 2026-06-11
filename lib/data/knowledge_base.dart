@@ -496,5 +496,6 @@ const List<Professor> professors = [
 ];
 
 /// Nomes de todos os professores (usado pelas telas).
-final List<String> allProfessors =
-    professors.map((p) => p.name).toList(growable: false);
+final List<String> allProfessors = professors
+    .map((p) => p.name)
+    .toList(growable: false);

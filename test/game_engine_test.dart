@@ -31,8 +31,11 @@ void main() {
     final asked = <int>{};
     while (!engine.isFinished) {
       final q = engine.currentQuestion!;
-      expect(asked.contains(q.id), isFalse,
-          reason: 'Pergunta ${q.id} repetida');
+      expect(
+        asked.contains(q.id),
+        isFalse,
+        reason: 'Pergunta ${q.id} repetida',
+      );
       asked.add(q.id);
       engine.answer(Answer.naoSei);
     }
@@ -45,9 +48,13 @@ void main() {
         final q = engine.currentQuestion!;
         engine.answer(_idealAnswer(professor, q.attributeId));
       }
-      expect(engine.bestGuess, professor.name,
-          reason: 'Falhou para ${professor.name} '
-              'após ${engine.history.length} perguntas');
+      expect(
+        engine.bestGuess,
+        professor.name,
+        reason:
+            'Falhou para ${professor.name} '
+            'após ${engine.history.length} perguntas',
+      );
     }
   });
 
@@ -89,16 +96,18 @@ void main() {
     );
   });
 
-  test('perguntas sem informação (atributos desconhecidos) não são feitas',
-      () {
+  test('perguntas sem informação (atributos desconhecidos) não são feitas', () {
     // aulaProgramacao, maisDe40Anos e aulaSemestre2 estão como 0.5 para
     // todos os professores até serem preenchidas.
     final unknownIds = {19, 20, 21};
     final engine = _newEngine();
     while (!engine.isFinished) {
       final q = engine.currentQuestion!;
-      expect(unknownIds.contains(q.id), isFalse,
-          reason: 'Pergunta ${q.id} não diferencia ninguém');
+      expect(
+        unknownIds.contains(q.id),
+        isFalse,
+        reason: 'Pergunta ${q.id} não diferencia ninguém',
+      );
       engine.answer(Answer.naoSei);
     }
   });

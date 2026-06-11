@@ -27,10 +27,7 @@ class AkinatorCharacter extends StatelessWidget {
     return Container(
       color: BrutalColors.purple,
       child: Center(
-        child: Text(
-          '🔮',
-          style: TextStyle(fontSize: size * 0.45),
-        ),
+        child: Text('🔮', style: TextStyle(fontSize: size * 0.45)),
       ),
     );
   }

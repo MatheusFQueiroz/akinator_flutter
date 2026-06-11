@@ -12,11 +12,11 @@ class GameResult {
   });
 
   Map<String, dynamic> toJson() => {
-        'answers': answers,
-        'predicted': predicted,
-        'actual': actual,
-        'timestamp': timestamp.toIso8601String(),
-      };
+    'answers': answers,
+    'predicted': predicted,
+    'actual': actual,
+    'timestamp': timestamp.toIso8601String(),
+  };
 
   factory GameResult.fromJson(Map<String, dynamic> json) {
     return GameResult(
@@ -41,16 +41,15 @@ class ConfusionPair {
     this.count = 0,
   });
 
-  String get key =>
-      professorA.compareTo(professorB) < 0
-          ? '${professorA}_$professorB'
-          : '${professorB}_$professorA';
+  String get key => professorA.compareTo(professorB) < 0
+      ? '${professorA}_$professorB'
+      : '${professorB}_$professorA';
 
   Map<String, dynamic> toJson() => {
-        'professorA': professorA,
-        'professorB': professorB,
-        'count': count,
-      };
+    'professorA': professorA,
+    'professorB': professorB,
+    'count': count,
+  };
 
   factory ConfusionPair.fromJson(Map<String, dynamic> json) {
     return ConfusionPair(

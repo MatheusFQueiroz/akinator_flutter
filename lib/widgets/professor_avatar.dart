@@ -4,11 +4,7 @@ class ProfessorAvatar extends StatelessWidget {
   final String name;
   final double radius;
 
-  const ProfessorAvatar({
-    super.key,
-    required this.name,
-    this.radius = 50,
-  });
+  const ProfessorAvatar({super.key, required this.name, this.radius = 50});
 
   static const Map<String, String> _imageMap = {
     'Guilherme Alves': 'guilherme_alves.png',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/knowledge_base.dart';
 import '../models/answer.dart';
+import '../models/question.dart';
 import '../services/game_engine.dart';
 import '../services/learning_service.dart';
 import '../theme/brutal.dart';
@@ -79,6 +80,51 @@ class _QuestionScreenState extends State<QuestionScreen> {
     );
   }
 
+  Widget _questionPanel(Question question) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        BrutalBox(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            question.text,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: BrutalColors.ink,
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              height: 1.4,
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        Expanded(
+          child: ListView.separated(
+            itemCount: Answer.values.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 14),
+            itemBuilder: (context, index) {
+              final answer = Answer.values[index];
+              return BrutalButton(
+                color: _answerColors[answer]!,
+                shadowOffset: 4,
+                onPressed: () => _handleAnswer(answer),
+                child: Text(
+                  answer.label.toUpperCase(),
+                  style: const TextStyle(
+                    color: BrutalColors.ink,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final engine = _engine;
@@ -97,94 +143,69 @@ class _QuestionScreenState extends State<QuestionScreen> {
     return Scaffold(
       backgroundColor: BrutalColors.bg,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 720),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  BrutalButton(
-                    color: BrutalColors.white,
-                    padding: const EdgeInsets.all(8),
-                    shadowOffset: 3,
-                    onPressed: engine.history.isEmpty ? null : _goBack,
-                    child: const Icon(
-                      Icons.arrow_back,
-                      size: 20,
-                      color: BrutalColors.ink,
+                  Row(
+                    children: [
+                      BrutalButton(
+                        color: BrutalColors.white,
+                        padding: const EdgeInsets.all(8),
+                        shadowOffset: 3,
+                        onPressed: engine.history.isEmpty ? null : _goBack,
+                        child: const Icon(
+                          Icons.arrow_back,
+                          size: 20,
+                          color: BrutalColors.ink,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      BrutalTag(
+                        text: 'Pergunta ${engine.questionNumber}',
+                        color: BrutalColors.yellow,
+                      ),
+                      const Spacer(),
+                      BrutalTag(
+                        text: 'Certeza $confidence%',
+                        color: BrutalColors.lilac,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Expanded(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        // Em telas estreitas o personagem vai para cima da
+                        // pergunta; em telas largas fica ao lado.
+                        if (constraints.maxWidth < 480) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const Center(child: AkinatorCharacter(size: 80)),
+                              const SizedBox(height: 16),
+                              Expanded(child: _questionPanel(question)),
+                            ],
+                          );
+                        }
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const AkinatorCharacter(size: 110),
+                            const SizedBox(width: 20),
+                            Expanded(child: _questionPanel(question)),
+                          ],
+                        );
+                      },
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  BrutalTag(
-                    text: 'Pergunta ${engine.questionNumber}',
-                    color: BrutalColors.yellow,
-                  ),
-                  const Spacer(),
-                  BrutalTag(
-                    text: 'Certeza $confidence%',
-                    color: BrutalColors.lilac,
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              BrutalProgressBar(value: engine.bestProbability),
-              const SizedBox(height: 24),
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AkinatorCharacter(size: 110),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          BrutalBox(
-                            padding: const EdgeInsets.all(24),
-                            child: Text(
-                              question.text,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                color: BrutalColors.ink,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800,
-                                height: 1.4,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          Expanded(
-                            child: ListView.separated(
-                              itemCount: Answer.values.length,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(height: 14),
-                              itemBuilder: (context, index) {
-                                final answer = Answer.values[index];
-                                return BrutalButton(
-                                  color: _answerColors[answer]!,
-                                  shadowOffset: 4,
-                                  onPressed: () => _handleAnswer(answer),
-                                  child: Text(
-                                    answer.label.toUpperCase(),
-                                    style: const TextStyle(
-                                      color: BrutalColors.ink,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

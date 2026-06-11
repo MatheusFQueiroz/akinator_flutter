@@ -53,10 +53,7 @@ class LearningService {
   }
 
   int getConfusionCount(String profA, String profB) {
-    final pairKey = ConfusionPair(
-      professorA: profA,
-      professorB: profB,
-    ).key;
+    final pairKey = ConfusionPair(professorA: profA, professorB: profB).key;
     return _confusionMatrix[pairKey] ?? 0;
   }
 
