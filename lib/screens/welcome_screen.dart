@@ -75,31 +75,33 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  SizedBox(
-                    height: 108,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: allProfessors.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 12),
-                      itemBuilder: (context, index) {
-                        final name = allProfessors[index];
-                        return Column(
-                          children: [
-                            ProfessorAvatar(name: name, radius: 30),
-                            const SizedBox(height: 6),
-                            Text(
-                              name,
-                              style: const TextStyle(
-                                color: BrutalColors.ink,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 8,
+                    runSpacing: 14,
+                    children: [
+                      for (final name in allProfessors)
+                        SizedBox(
+                          width: 78,
+                          child: Column(
+                            children: [
+                              ProfessorAvatar(name: name, radius: 26),
+                              const SizedBox(height: 6),
+                              Text(
+                                name,
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: BrutalColors.ink,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        );
-                      },
-                    ),
+                            ],
+                          ),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 32),
                   BrutalButton(
