@@ -60,12 +60,18 @@ class LearningService {
     return _confusionMatrix[pairKey] ?? 0;
   }
 
-  double getBoost(int questionId, String predicted, String actual) {
-    final confusion = getConfusionCount(predicted, actual);
-    if (confusion <= 0) return 0.0;
-
-    final boost = confusion * 0.3;
-    return boost > 2.0 ? 2.0 : boost;
+  /// Peso de prior para o professor no início da partida. Professores que
+  /// eram a resposta certa em partidas que o jogo errou recebem um leve
+  /// reforço inicial, corrigindo a tendência do motor de subestimá-los.
+  double getPriorWeight(String professor) {
+    var missed = 0;
+    for (final r in _results) {
+      if (r.actual == professor && r.predicted != professor) {
+        missed++;
+      }
+    }
+    final weight = 1.0 + missed * 0.15;
+    return weight > 1.75 ? 1.75 : weight;
   }
 
   int get totalGames => _results.length;

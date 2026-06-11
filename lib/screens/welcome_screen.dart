@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../data/questions.dart';
+import '../data/knowledge_base.dart';
+import '../theme/brutal.dart';
 import '../widgets/akinator_character.dart';
 import '../widgets/professor_avatar.dart';
 import 'question_screen.dart';
@@ -10,115 +11,111 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A0033),
+      backgroundColor: BrutalColors.bg,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const AkinatorCharacter(size: 180),
-              const SizedBox(height: 16),
-              const Text(
-                'Quem é o Professor?',
-                style: TextStyle(
-                  fontSize: 34,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFA855F7),
-                ),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  BrutalTag(text: 'ADS • Biopark', color: BrutalColors.yellow),
+                ],
               ),
-              const SizedBox(height: 8),
-              const Text(
-                'Akinator dos Professores — ADS Biopark',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFFC084FC),
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-              const SizedBox(height: 30),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  'Pense em um professor do curso de ADS do Biopark.\nEu vou tentar adivinhar quem é!',
+              const SizedBox(height: 20),
+              const Center(child: AkinatorCharacter(size: 150)),
+              const SizedBox(height: 28),
+              BrutalBox(
+                color: BrutalColors.purple,
+                padding: const EdgeInsets.all(20),
+                child: const Text(
+                  'QUEM É O\nPROFESSOR?',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFFE0D0FF),
-                    height: 1.5,
+                    fontSize: 36,
+                    height: 1.1,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1,
+                    color: BrutalColors.white,
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Professores disponíveis',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFC084FC),
-                    ),
+              const SizedBox(height: 20),
+              BrutalBox(
+                padding: const EdgeInsets.all(16),
+                child: const Text(
+                  'Pense em um professor do curso de ADS do Biopark. '
+                  'Eu vou fazer perguntas até descobrir quem é — '
+                  'igual ao Akinator!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    height: 1.5,
+                    fontWeight: FontWeight.w600,
+                    color: BrutalColors.ink,
                   ),
+                ),
+              ),
+              const SizedBox(height: 28),
+              const Text(
+                'PROFESSORES DISPONÍVEIS',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                  color: BrutalColors.ink,
                 ),
               ),
               const SizedBox(height: 12),
               SizedBox(
-                height: 100,
-                child: ListView.builder(
+                height: 108,
+                child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
                   itemCount: allProfessors.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
                   itemBuilder: (context, index) {
                     final name = allProfessors[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 16),
-                      child: Column(
-                        children: [
-                          ProfessorAvatar(name: name, radius: 30),
-                          const SizedBox(height: 6),
-                          Text(
-                            name,
-                            style: const TextStyle(
-                              color: Color(0xFFE0D0FF),
-                              fontSize: 11,
-                            ),
-                            overflow: TextOverflow.ellipsis,
+                    return Column(
+                      children: [
+                        ProfessorAvatar(name: name, radius: 30),
+                        const SizedBox(height: 6),
+                        Text(
+                          name,
+                          style: const TextStyle(
+                            color: BrutalColors.ink,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
                           ),
-                        ],
-                      ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     );
                   },
                 ),
               ),
-              const SizedBox(height: 40),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: FilledButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const QuestionScreen(),
-                      ),
-                    );
-                  },
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF7C3AED),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 48,
-                      vertical: 18,
+              const SizedBox(height: 32),
+              BrutalButton(
+                color: BrutalColors.yellow,
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                shadowOffset: 6,
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const QuestionScreen(),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: const Text(
-                    'Começar',
+                  );
+                },
+                child: const Center(
+                  child: Text(
+                    'COMEÇAR →',
                     style: TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1,
+                      color: BrutalColors.ink,
                     ),
                   ),
                 ),

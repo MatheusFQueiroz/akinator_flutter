@@ -70,17 +70,23 @@ class ProfessorAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final imagePath = _getImagePath();
 
-    return CircleAvatar(
-      radius: radius,
-      backgroundColor: _getColor(),
-      backgroundImage: AssetImage(imagePath),
-      onBackgroundImageError: (_, __) {},
-      child: Text(
-        _getInitials(),
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: radius * 0.8,
-          fontWeight: FontWeight.bold,
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: const Color(0xFF111111), width: 3),
+      ),
+      child: CircleAvatar(
+        radius: radius,
+        backgroundColor: _getColor(),
+        backgroundImage: AssetImage(imagePath),
+        onBackgroundImageError: (_, __) {},
+        child: Text(
+          _getInitials(),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: radius * 0.8,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
