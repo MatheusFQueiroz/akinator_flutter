@@ -41,20 +41,14 @@ class GameEngine {
   final List<Professor> professors;
   final List<Question> questions;
 
-  /// Confiança mínima do melhor palpite para encerrar o jogo cedo.
   final double confidenceThreshold;
 
-  /// Número mínimo de perguntas antes de permitir o encerramento.
   final int minQuestions;
 
-  /// Número máximo de perguntas por partida.
   final int maxQuestions;
 
-  /// Ganho de informação mínimo para uma pergunta valer a pena.
   static const double _minInformationGain = 1e-3;
 
-  /// Perguntas com ganho a partir desta fração do melhor entram no
-  /// sorteio da próxima pergunta (variedade entre partidas).
   static const double _gainTolerance = 0.7;
 
   final math.Random _random;
@@ -64,41 +58,28 @@ class GameEngine {
   late Map<String, double> _posterior;
   Question? _currentQuestion;
 
-  /// Perguntas já respondidas nesta partida.
   List<AnsweredQuestion> get history => List.unmodifiable(_history);
 
-  /// Distribuição de probabilidade atual sobre os professores.
   Map<String, double> get probabilities => Map.unmodifiable(_posterior);
 
-  /// Pergunta selecionada para ser feita agora (null se não houver
-  /// nenhuma pergunta informativa restante).
   Question? get currentQuestion => _currentQuestion;
 
-  /// Número da pergunta atual (1-based), para exibição.
   int get questionNumber => _history.length + 1;
 
-  /// Professor mais provável no momento.
   String get bestGuess =>
       _posterior.entries.reduce((a, b) => a.value >= b.value ? a : b).key;
 
-  /// Probabilidade do melhor palpite (0.0 a 1.0).
   double get bestProbability =>
       _posterior.values.reduce((a, b) => a >= b ? a : b);
 
-  /// Palpites já rejeitados pelo jogador nesta partida.
   Set<String> get rejectedGuesses => Set.unmodifiable(_rejected);
 
-  /// Indica que o motor está confiante o bastante para arriscar um
-  /// palpite ("está pensando em X?").
   bool get shouldGuess =>
       _history.length >= minQuestions && bestProbability >= confidenceThreshold;
 
-  /// Indica que não dá mais para continuar perguntando: acabaram as
-  /// perguntas informativas ou o limite foi atingido.
   bool get isFinished =>
       _currentQuestion == null || _history.length >= maxQuestions;
 
-  /// Registra a resposta do jogador para a pergunta atual.
   void answer(Answer answer) {
     final question = _currentQuestion;
     if (question == null) return;
@@ -107,8 +88,6 @@ class GameEngine {
     _currentQuestion = _selectNextQuestion();
   }
 
-  /// Desfaz a última resposta (botão "voltar"), restaurando exatamente a
-  /// pergunta que estava na tela.
   void undo() {
     if (_history.isEmpty) return;
     final last = _history.removeLast();
@@ -116,16 +95,12 @@ class GameEngine {
     _currentQuestion = last.question;
   }
 
-  /// Elimina um professor cujo palpite o jogador rejeitou e segue o jogo.
   void rejectGuess(String professorName) {
     _rejected.add(professorName);
     _updatePosterior();
     _currentQuestion = _selectNextQuestion();
   }
 
-  /// Verossimilhança de o jogador dar [answer] para um professor cujo
-  /// atributo tem probabilidade [t] de ser "sim". Os extremos não chegam
-  /// a 0/1 para tolerar respostas erradas do jogador.
   static double likelihood(Answer answer, double t) {
     switch (answer) {
       case Answer.sim:
@@ -170,8 +145,6 @@ class GameEngine {
     dist.updateAll((_, v) => v / total);
   }
 
-  /// Sorteia a próxima pergunta entre as melhores: todas as candidatas com
-  /// ganho de informação a partir de [_gainTolerance] do maior ganho.
   Question? _selectNextQuestion() {
     final askedIds = _history.map((h) => h.question.id).toSet();
     final candidates = <(Question, double)>[];
@@ -192,8 +165,6 @@ class GameEngine {
     return top[_random.nextInt(top.length)];
   }
 
-  /// Ganho de informação esperado da pergunta: entropia atual menos a
-  /// entropia esperada da distribuição após uma resposta sim/não.
   double _informationGain(Question question) {
     final current = _entropy(_posterior.values);
     var expected = 0.0;
