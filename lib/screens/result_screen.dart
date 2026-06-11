@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import '../data/questions.dart';
+import '../data/knowledge_base.dart';
 import '../services/learning_service.dart';
+import '../theme/brutal.dart';
 import '../widgets/akinator_character.dart';
 import '../widgets/professor_avatar.dart';
 import 'welcome_screen.dart';
 
 class ResultScreen extends StatefulWidget {
-  final Map<String, double> scores;
+  /// Distribuição de probabilidade final do GameEngine (soma 1.0).
+  final Map<String, double> probabilities;
   final List<Map<String, String>> answers;
   final LearningService learningService;
 
   const ResultScreen({
     super.key,
-    required this.scores,
+    required this.probabilities,
     required this.answers,
     required this.learningService,
   });
@@ -23,25 +25,18 @@ class ResultScreen extends StatefulWidget {
 
 class _ResultScreenState extends State<ResultScreen> {
   late String _predicted;
-  late List<MapEntry<String, double>> _top5;
+  late List<MapEntry<String, double>> _ranking;
   late int _confidence;
 
   @override
   void initState() {
     super.initState();
-    _calculateResult();
-  }
-
-  void _calculateResult() {
-    final sorted = widget.scores.entries.toList()
+    final sorted = widget.probabilities.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
-    _top5 = sorted.take(5).toList();
-
-    _predicted = _top5.isNotEmpty ? _top5.first.key : 'Desconhecido';
-    final total = widget.scores.values.fold(0.0, (a, b) => a + b);
-    _confidence = total > 0
-        ? ((_top5.first.value / total) * 100).round()
-        : 0;
+    _ranking = sorted;
+    _predicted = sorted.isNotEmpty ? sorted.first.key : 'Desconhecido';
+    _confidence =
+        sorted.isNotEmpty ? (sorted.first.value * 100).round() : 0;
   }
 
   void _onCorrect() {
@@ -54,19 +49,22 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 
   void _onWrong() {
-    _showWrongDialog();
-  }
-
-  void _showWrongDialog() {
     final sorted = allProfessors.toList()..sort();
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF2D1B4E),
+        backgroundColor: BrutalColors.white,
+        shape: const RoundedRectangleBorder(
+          side: BorderSide(color: BrutalColors.ink, width: 3),
+        ),
         title: const Text(
-          'Quem era o professor?',
-          style: TextStyle(color: Colors.white),
+          'QUEM ERA O PROFESSOR?',
+          style: TextStyle(
+            color: BrutalColors.ink,
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+          ),
         ),
         content: SizedBox(
           width: double.maxFinite,
@@ -79,7 +77,10 @@ class _ResultScreenState extends State<ResultScreen> {
                 leading: ProfessorAvatar(name: prof, radius: 20),
                 title: Text(
                   prof,
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(
+                    color: BrutalColors.ink,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -102,16 +103,19 @@ class _ResultScreenState extends State<ResultScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF2D1B4E),
+        backgroundColor: BrutalColors.white,
+        shape: const RoundedRectangleBorder(
+          side: BorderSide(color: BrutalColors.ink, width: 3),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              acertou ? '🎉 Acertei!' : '😅 Errei!',
+              acertou ? '🎉 ACERTEI!' : '😅 ERREI!',
               style: const TextStyle(
-                color: Colors.white,
+                color: BrutalColors.ink,
                 fontSize: 24,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
               ),
             ),
             if (!acertou && correctProfessor != null) ...[
@@ -119,23 +123,24 @@ class _ResultScreenState extends State<ResultScreen> {
               Text(
                 'O professor era: $correctProfessor',
                 style: const TextStyle(
-                  color: Color(0xFFC084FC),
+                  color: BrutalColors.ink,
                   fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
-            const SizedBox(height: 8),
-            const Text(
-              'O aprendizado foi salvo!',
-              style: TextStyle(
-                color: Color(0xFFA855F7),
-                fontSize: 14,
-              ),
+            const SizedBox(height: 12),
+            const BrutalTag(
+              text: 'Aprendizado salvo',
+              color: BrutalColors.lightGreen,
             ),
           ],
         ),
         actions: [
-          TextButton(
+          BrutalButton(
+            color: BrutalColors.yellow,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            shadowOffset: 3,
             onPressed: () {
               Navigator.pop(ctx);
               Navigator.pushReplacement(
@@ -144,8 +149,11 @@ class _ResultScreenState extends State<ResultScreen> {
               );
             },
             child: const Text(
-              'Jogar Novamente',
-              style: TextStyle(color: Color(0xFFA855F7)),
+              'JOGAR NOVAMENTE',
+              style: TextStyle(
+                color: BrutalColors.ink,
+                fontWeight: FontWeight.w900,
+              ),
             ),
           ),
         ],
@@ -155,149 +163,147 @@ class _ResultScreenState extends State<ResultScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final second = _ranking.length > 1 ? _ranking[1] : null;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF1A0033),
+      backgroundColor: BrutalColors.bg,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const Center(child: AkinatorCharacter(size: 110)),
               const SizedBox(height: 20),
-              const AkinatorCharacter(size: 120),
-              const SizedBox(height: 8),
-              const Text(
-                'Eu acho que você está pensando em...',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Color(0xFFC084FC),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF7C3AED), Color(0xFFA855F7), Color(0xFFE879F9)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  BrutalTag(
+                    text: 'Eu acho que é...',
+                    color: BrutalColors.yellow,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF7C3AED).withValues(alpha: 0.5),
-                      blurRadius: 20,
-                      spreadRadius: 3,
+                ],
+              ),
+              const SizedBox(height: 20),
+              BrutalBox(
+                padding: const EdgeInsets.all(24),
+                shadowOffset: 7,
+                child: Column(
+                  children: [
+                    ProfessorAvatar(name: _predicted, radius: 70),
+                    const SizedBox(height: 16),
+                    Text(
+                      _predicted.toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                        color: BrutalColors.ink,
+                      ),
                     ),
+                    const SizedBox(height: 12),
+                    BrutalTag(
+                      text: '$_confidence% de certeza',
+                      color: BrutalColors.lilac,
+                    ),
+                    if (second != null) ...[
+                      const SizedBox(height: 10),
+                      Text(
+                        'Segunda opção: ${second.key} '
+                        '(${(second.value * 100).round()}%)',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: BrutalColors.ink,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
-                child: CircleAvatar(
-                  radius: 80,
-                  backgroundColor: const Color(0xFF2D1B4E),
-                  child: ProfessorAvatar(name: _predicted, radius: 76),
-                ),
               ),
-              const SizedBox(height: 16),
-              Text(
-                _predicted,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 28),
               Row(
                 children: [
                   Expanded(
-                    child: FilledButton.icon(
+                    child: BrutalButton(
+                      color: BrutalColors.green,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       onPressed: _onCorrect,
-                      icon: const Text('✅', style: TextStyle(fontSize: 18)),
-                      label: const Text(
-                        'Acertou!',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                      child: const Center(
+                        child: Text(
+                          '✅ ACERTOU!',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: BrutalColors.ink,
+                          ),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: FilledButton.icon(
+                    child: BrutalButton(
+                      color: BrutalColors.red,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       onPressed: _onWrong,
-                      icon: const Text('❌', style: TextStyle(fontSize: 18)),
-                      label: const Text(
-                        'Errou!',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                      child: const Center(
+                        child: Text(
+                          '❌ ERROU!',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: BrutalColors.ink,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 28),
               if (widget.learningService.totalGames > 0) ...[
-                Container(
-                  width: double.infinity,
+                BrutalBox(
+                  color: BrutalColors.lilac,
+                  shadowOffset: 4,
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2D1B4E).withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
                   child: Text(
-                    'Jogos: ${widget.learningService.totalGames} | '
-                    'Erros: ${widget.learningService.totalMistakes}',
+                    'JOGOS: ${widget.learningService.totalGames}  |  '
+                    'ERROS: ${widget.learningService.totalMistakes}',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      color: Color(0xFFC084FC),
+                      color: BrutalColors.ink,
                       fontSize: 12,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
               ],
-              FilledButton(
+              BrutalButton(
+                color: BrutalColors.purple,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shadowOffset: 6,
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const WelcomeScreen(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const WelcomeScreen()),
                   );
                 },
-                style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF7C3AED),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: const Text(
-                  'Jogar Novamente',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                child: const Center(
+                  child: Text(
+                    'JOGAR NOVAMENTE',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1,
+                      color: BrutalColors.white,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
             ],
           ),
         ),

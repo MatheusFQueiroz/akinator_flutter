@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/welcome_screen.dart';
+import 'theme/brutal.dart';
 
 void main() {
   runApp(const AkinatorApp());
@@ -15,9 +16,10 @@ class AkinatorApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.dark,
+          seedColor: BrutalColors.purple,
+          brightness: Brightness.light,
         ),
+        scaffoldBackgroundColor: BrutalColors.bg,
         useMaterial3: true,
       ),
       home: const WelcomeScreen(),
