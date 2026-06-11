@@ -130,17 +130,6 @@ const List<Question> questions = [
   ),
 ];
 
-/// Base de conhecimento: cada professor com a probabilidade de "sim" para
-/// cada atributo (1.0 = sim, 0.0 = não, 0.5 ou ausente = desconhecido).
-///
-/// Para ADICIONAR UMA PERGUNTA NOVA:
-///   1. Crie um id em [Attr] e a [Question] correspondente acima.
-///   2. Preencha o atributo para cada professor abaixo. Atributos não
-///      preenchidos valem 0.5 (desconhecido) e a pergunta só passa a ser
-///      feita quando diferenciar pelo menos um professor.
-///
-/// TODO: preencher os valores reais de `aulaProgramacao`, `maisDe40Anos` e
-/// `aulaSemestre2` para cada professor (hoje estão como desconhecidos).
 const List<Professor> professors = [
   Professor(
     name: 'Fabiane',
