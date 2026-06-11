@@ -15,11 +15,20 @@ Answer _idealAnswer(Professor professor, String attributeId) {
 GameEngine _newEngine() =>
     GameEngine(professors: professors, questions: questions);
 
+/// Joga com respostas ideais até o motor querer palpitar ou acabar.
+void _playFor(GameEngine engine, Professor professor) {
+  while (!engine.isFinished && !engine.shouldGuess) {
+    final q = engine.currentQuestion!;
+    engine.answer(_idealAnswer(professor, q.attributeId));
+  }
+}
+
 void main() {
   test('começa com distribuição uniforme e uma pergunta selecionada', () {
     final engine = _newEngine();
     expect(engine.currentQuestion, isNotNull);
     expect(engine.isFinished, isFalse);
+    expect(engine.shouldGuess, isFalse);
     final uniform = 1.0 / professors.length;
     for (final p in engine.probabilities.values) {
       expect(p, closeTo(uniform, 1e-9));
@@ -41,13 +50,10 @@ void main() {
     }
   });
 
-  test('adivinha corretamente cada professor com respostas ideais', () {
+  test('palpita corretamente cada professor com respostas ideais', () {
     for (final professor in professors) {
       final engine = _newEngine();
-      while (!engine.isFinished) {
-        final q = engine.currentQuestion!;
-        engine.answer(_idealAnswer(professor, q.attributeId));
-      }
+      _playFor(engine, professor);
       expect(
         engine.bestGuess,
         professor.name,
@@ -58,15 +64,25 @@ void main() {
     }
   });
 
-  test('termina cedo quando atinge a confiança mínima', () {
+  test('quer palpitar cedo, antes de esgotar as perguntas', () {
     final professor = professors.first; // Fabiane
     final engine = _newEngine();
-    while (!engine.isFinished) {
-      final q = engine.currentQuestion!;
-      engine.answer(_idealAnswer(professor, q.attributeId));
-    }
+    _playFor(engine, professor);
+    expect(engine.shouldGuess, isTrue);
     expect(engine.history.length, lessThan(questions.length));
     expect(engine.history.length, greaterThanOrEqualTo(engine.minQuestions));
+  });
+
+  test('palpite rejeitado elimina o professor e o jogo continua', () {
+    final professor = professors.first; // Fabiane
+    final engine = _newEngine();
+    _playFor(engine, professor);
+    expect(engine.bestGuess, professor.name);
+
+    engine.rejectGuess(professor.name);
+    expect(engine.probabilities[professor.name], 0.0);
+    expect(engine.bestGuess, isNot(professor.name));
+    expect(engine.rejectedGuesses, contains(professor.name));
   });
 
   test('undo restaura a distribuição anterior', () {

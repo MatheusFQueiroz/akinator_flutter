@@ -4,6 +4,7 @@ import '../theme/brutal.dart';
 import '../widgets/akinator_character.dart';
 import '../widgets/professor_avatar.dart';
 import 'question_screen.dart';
+import 'stats_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -75,31 +76,33 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  SizedBox(
-                    height: 108,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: allProfessors.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 12),
-                      itemBuilder: (context, index) {
-                        final name = allProfessors[index];
-                        return Column(
-                          children: [
-                            ProfessorAvatar(name: name, radius: 30),
-                            const SizedBox(height: 6),
-                            Text(
-                              name,
-                              style: const TextStyle(
-                                color: BrutalColors.ink,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 8,
+                    runSpacing: 14,
+                    children: [
+                      for (final name in allProfessors)
+                        SizedBox(
+                          width: 78,
+                          child: Column(
+                            children: [
+                              ProfessorAvatar(name: name, radius: 26),
+                              const SizedBox(height: 6),
+                              Text(
+                                name,
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: BrutalColors.ink,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        );
-                      },
-                    ),
+                            ],
+                          ),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 32),
                   BrutalButton(
@@ -119,6 +122,29 @@ class WelcomeScreen extends StatelessWidget {
                         'COMEÇAR →',
                         style: TextStyle(
                           fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                          color: BrutalColors.ink,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  BrutalButton(
+                    color: BrutalColors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shadowOffset: 4,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const StatsScreen()),
+                      );
+                    },
+                    child: const Center(
+                      child: Text(
+                        '📊 ESTATÍSTICAS',
+                        style: TextStyle(
+                          fontSize: 15,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1,
                           color: BrutalColors.ink,

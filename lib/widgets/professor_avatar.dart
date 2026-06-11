@@ -67,21 +67,27 @@ class ProfessorAvatar extends StatelessWidget {
     final imagePath = _getImagePath();
 
     return Container(
+      width: radius * 2,
+      height: radius * 2,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
+        color: _getColor(),
         border: Border.all(color: const Color(0xFF111111), width: 3),
       ),
-      child: CircleAvatar(
-        radius: radius,
-        backgroundColor: _getColor(),
-        backgroundImage: AssetImage(imagePath),
-        onBackgroundImageError: (_, __) {},
-        child: Text(
-          _getInitials(),
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: radius * 0.8,
-            fontWeight: FontWeight.bold,
+      child: ClipOval(
+        child: Image.asset(
+          imagePath,
+          fit: BoxFit.cover,
+          // As iniciais só aparecem quando não há foto nos assets.
+          errorBuilder: (_, __, ___) => Center(
+            child: Text(
+              _getInitials(),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: radius * 0.7,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ),
       ),
