@@ -4,6 +4,7 @@ import '../theme/brutal.dart';
 import '../widgets/akinator_character.dart';
 import '../widgets/professor_avatar.dart';
 import 'question_screen.dart';
+import 'stats_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -121,6 +122,29 @@ class WelcomeScreen extends StatelessWidget {
                         'COMEÇAR →',
                         style: TextStyle(
                           fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                          color: BrutalColors.ink,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  BrutalButton(
+                    color: BrutalColors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shadowOffset: 4,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const StatsScreen()),
+                      );
+                    },
+                    child: const Center(
+                      child: Text(
+                        '📊 ESTATÍSTICAS',
+                        style: TextStyle(
+                          fontSize: 15,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1,
                           color: BrutalColors.ink,

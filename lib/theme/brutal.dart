@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Paleta neo-brutalista: fundo claro, cores chapadas vibrantes,
 /// contornos pretos grossos e sombras duras (sem blur).
@@ -115,7 +116,12 @@ class _BrutalButtonState extends State<BrutalButton> {
       onTapDown: _enabled ? (_) => setState(() => _pressed = true) : null,
       onTapUp: _enabled ? (_) => setState(() => _pressed = false) : null,
       onTapCancel: _enabled ? () => setState(() => _pressed = false) : null,
-      onTap: widget.onPressed,
+      onTap: _enabled
+          ? () {
+              HapticFeedback.selectionClick();
+              widget.onPressed!();
+            }
+          : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 70),
         transform: Matrix4.translationValues(offset, offset, 0),
