@@ -21,8 +21,6 @@ class Attr {
   static const passaAtividades = 'passaAtividades';
   static const aulaSemestre3 = 'aulaSemestre3';
   static const aulaSemestre5 = 'aulaSemestre5';
-
-  // Novos atributos.
   static const nomeComecaComJ = 'nomeComecaComJ';
   static const nomeComecaComVogal = 'nomeComecaComVogal';
   static const aulaProgramacao = 'aulaProgramacao';
@@ -30,8 +28,6 @@ class Attr {
   static const aulaSemestre2 = 'aulaSemestre2';
 }
 
-/// Perguntas disponíveis. A ordem aqui NÃO é a ordem do jogo: o motor
-/// (GameEngine) escolhe dinamicamente a pergunta mais informativa.
 const List<Question> questions = [
   Question(id: 1, text: 'O professor usa óculos?', attributeId: Attr.usaOculos),
   Question(id: 2, text: 'O professor tem barba?', attributeId: Attr.temBarba),
@@ -153,11 +149,11 @@ const List<Professor> professors = [
       Attr.temBarba: 0.0,
       Attr.generoFeminino: 1.0,
       Attr.temTatuagem: 1.0,
-      Attr.vaiDeCarro: 0.0,
+      Attr.vaiDeCarro: 1.0,
       Attr.aulaSemestre1: 1.0,
-      Attr.parouDeDarAula: 0.0,
+      Attr.parouDeDarAula: 1.0,
       Attr.formadoNoBiopark: 0.0,
-      Attr.moraEmToledo: 0.0,
+      Attr.moraEmToledo: 1.0,
       Attr.olhosClaros: 0.0,
       Attr.aulaProjetoIntegrador: 0.0,
       Attr.cabeloCurto: 0.0,
@@ -176,11 +172,11 @@ const List<Professor> professors = [
       Attr.temBarba: 1.0,
       Attr.generoFeminino: 0.0,
       Attr.temTatuagem: 1.0,
-      Attr.vaiDeCarro: 0.0,
+      Attr.vaiDeCarro: 1.0,
       Attr.aulaSemestre1: 0.0,
       Attr.parouDeDarAula: 0.0,
       Attr.formadoNoBiopark: 0.0,
-      Attr.moraEmToledo: 0.0,
+      Attr.moraEmToledo: 1.0,
       Attr.olhosClaros: 1.0,
       Attr.aulaProjetoIntegrador: 0.0,
       Attr.cabeloCurto: 1.0,
@@ -226,7 +222,7 @@ const List<Professor> professors = [
       Attr.aulaSemestre1: 1.0,
       Attr.parouDeDarAula: 0.0,
       Attr.formadoNoBiopark: 0.0,
-      Attr.moraEmToledo: 0.0,
+      Attr.moraEmToledo: 1.0,
       Attr.olhosClaros: 0.0,
       Attr.aulaProjetoIntegrador: 1.0,
       Attr.cabeloCurto: 1.0,
@@ -298,7 +294,7 @@ const List<Professor> professors = [
       Attr.moraEmToledo: 1.0,
       Attr.olhosClaros: 1.0,
       Attr.aulaProjetoIntegrador: 0.0,
-      Attr.cabeloCurto: 1.0,
+      Attr.cabeloCurto: 0.0,
       Attr.usouLaboratorio: 0.0,
       Attr.passaAtividades: 1.0,
       Attr.aulaSemestre3: 1.0,
@@ -323,7 +319,7 @@ const List<Professor> professors = [
       Attr.aulaProjetoIntegrador: 0.0,
       Attr.cabeloCurto: 1.0,
       Attr.usouLaboratorio: 0.0,
-      Attr.passaAtividades: 0.0,
+      Attr.passaAtividades: 1.0,
       Attr.aulaSemestre3: 0.0,
       Attr.aulaSemestre5: 1.0,
       Attr.nomeComecaComJ: 1.0,
@@ -363,8 +359,6 @@ const List<Professor> professors = [
       Attr.vaiDeCarro: 1.0,
       Attr.aulaSemestre1: 0.0,
       Attr.parouDeDarAula: 1.0,
-      // No banco antigo, Renato aparecia como "provavelmente sim" para
-      // formado no Biopark — incerteza parcial mantida.
       Attr.formadoNoBiopark: 0.3,
       Attr.moraEmToledo: 1.0,
       Attr.olhosClaros: 0.0,
@@ -389,7 +383,7 @@ const List<Professor> professors = [
       Attr.aulaSemestre1: 0.0,
       Attr.parouDeDarAula: 0.0,
       Attr.formadoNoBiopark: 0.0,
-      Attr.moraEmToledo: 0.0,
+      Attr.moraEmToledo: 1.0,
       Attr.olhosClaros: 0.0,
       Attr.aulaProjetoIntegrador: 0.0,
       Attr.cabeloCurto: 1.0,
@@ -407,10 +401,10 @@ const List<Professor> professors = [
       Attr.usaOculos: 0.0,
       Attr.temBarba: 1.0,
       Attr.generoFeminino: 0.0,
-      Attr.temTatuagem: 0.0,
+      Attr.temTatuagem: 1.0,
       Attr.vaiDeCarro: 1.0,
       Attr.aulaSemestre1: 1.0,
-      Attr.parouDeDarAula: 0.0,
+      Attr.parouDeDarAula: 1.0,
       Attr.formadoNoBiopark: 0.3,
       Attr.moraEmToledo: 0.0,
       Attr.olhosClaros: 0.0,
