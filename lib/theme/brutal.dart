@@ -136,26 +136,3 @@ class _BrutalButtonState extends State<BrutalButton> {
     );
   }
 }
-
-/// Barra de progresso brutalista (preenchimento chapado com borda).
-class BrutalProgressBar extends StatelessWidget {
-  final double value;
-
-  const BrutalProgressBar({super.key, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 16,
-      decoration: BoxDecoration(
-        color: BrutalColors.white,
-        border: Border.all(color: BrutalColors.ink, width: 3),
-      ),
-      child: FractionallySizedBox(
-        alignment: Alignment.centerLeft,
-        widthFactor: value.clamp(0.0, 1.0),
-        child: Container(color: BrutalColors.purple),
-      ),
-    );
-  }
-}

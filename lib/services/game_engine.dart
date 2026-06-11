@@ -118,7 +118,8 @@ class GameEngine {
     final scores = Map<String, double>.from(_priors);
     for (final answered in _history) {
       for (final p in professors) {
-        scores[p.name] = scores[p.name]! *
+        scores[p.name] =
+            scores[p.name]! *
             likelihood(
               answered.answer,
               p.probabilityFor(answered.question.attributeId),
@@ -164,7 +165,8 @@ class GameEngine {
       final joint = <double>[];
       var pAnswer = 0.0;
       for (final p in professors) {
-        final v = _posterior[p.name]! *
+        final v =
+            _posterior[p.name]! *
             likelihood(hypothetical, p.probabilityFor(question.attributeId));
         joint.add(v);
         pAnswer += v;
