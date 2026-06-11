@@ -197,6 +197,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
   Widget _questionPanel(Question question) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         AnimatedSwitcher(
@@ -227,29 +228,23 @@ class _QuestionScreenState extends State<QuestionScreen> {
           ),
         ),
         const SizedBox(height: 24),
-        Expanded(
-          child: ListView.separated(
-            itemCount: Answer.values.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 14),
-            itemBuilder: (context, index) {
-              final answer = Answer.values[index];
-              return BrutalButton(
-                color: _answerColors[answer]!,
-                shadowOffset: 4,
-                onPressed: () => _handleAnswer(answer),
-                child: Text(
-                  answer.label.toUpperCase(),
-                  style: const TextStyle(
-                    color: BrutalColors.ink,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              );
-            },
+        for (final answer in Answer.values) ...[
+          BrutalButton(
+            color: _answerColors[answer]!,
+            shadowOffset: 4,
+            onPressed: () => _handleAnswer(answer),
+            child: Text(
+              answer.label.toUpperCase(),
+              style: const TextStyle(
+                color: BrutalColors.ink,
+                fontSize: 15,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.5,
+              ),
+            ),
           ),
-        ),
+          if (answer != Answer.values.last) const SizedBox(height: 14),
+        ],
       ],
     );
   }
@@ -337,26 +332,33 @@ class _QuestionScreenState extends State<QuestionScreen> {
                     child: LayoutBuilder(
                       builder: (context, constraints) {
                         // Em telas estreitas o personagem vai para cima da
-                        // pergunta; em telas largas fica ao lado.
-                        if (constraints.maxWidth < 480) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Center(
-                                child: _character(80, engine.bestProbability),
-                              ),
-                              const SizedBox(height: 16),
-                              Expanded(child: _questionPanel(question)),
-                            ],
-                          );
-                        }
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _character(110, engine.bestProbability),
-                            const SizedBox(width: 24),
-                            Expanded(child: _questionPanel(question)),
-                          ],
+                        // pergunta; em telas largas fica ao lado. O bloco
+                        // inteiro fica centralizado na vertical.
+                        final content = constraints.maxWidth < 480
+                            ? Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Center(
+                                    child: _character(
+                                      80,
+                                      engine.bestProbability,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  _questionPanel(question),
+                                ],
+                              )
+                            : Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  _character(110, engine.bestProbability),
+                                  const SizedBox(width: 24),
+                                  Expanded(child: _questionPanel(question)),
+                                ],
+                              );
+                        return Center(
+                          child: SingleChildScrollView(child: content),
                         );
                       },
                     ),
